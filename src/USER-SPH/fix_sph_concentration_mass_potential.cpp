@@ -110,52 +110,6 @@ FixSPHConcentrationMassPotential::FixSPHConcentrationMassPotential(LAMMPS *lmp, 
     error->all(FLERR,
                "Can't find property next_local_pot for pair_style sph/surfacereaction/simple/charge");
   next_local_pot = atom->dvector[inext_local_pot];
-   // find the x-component normal
-  int fnx;
-  int inx = atom->find_custom("nx", fnx);
-  if (inx < 0)
-    error->all(FLERR,
-	       "Can't find property nx for pair_style sph/concentration/mass/potential/charge");
-  nx = atom->dvector[inx];
-  
-  // find the next x-component normal
-  int fdnx;
-  int idnx = atom->find_custom("dnx", fdnx);
-  if (idnx < 0)
-    error->all(FLERR,
-	       "Can't find property dnx for pair_style sph/concentration/mass/potential/charge");
-  dnx = atom->dvector[idnx];
-  // find the y-component normal
-  int fny;
-  int iny = atom->find_custom("ny", fny);
-  if (iny < 0)
-    error->all(FLERR,
-	       "Can't find property ny for pair_style sph/concentration/mass/potential/charge");
-  ny = atom->dvector[iny];
-  
-  // find the next y-component normal
-  int fdny;
-  int idny = atom->find_custom("dny", fdny);
-  if (idny < 0)
-    error->all(FLERR,
-	       "Can't find property dny for pair_style sph/concentration/mass/potential/charge");
-  dny = atom->dvector[idny];
-  
-  // find the z-component normal
-  int fnz;
-  int inz = atom->find_custom("nz", fnz);
-  if (inz < 0)
-    error->all(FLERR,
-	       "Can't find property nz for pair_style sph/concentration/mass/potential/charge");
-  nz = atom->dvector[inz];
-  
-  // find the next z-component normal
-  int fdnz;
-  int idnz = atom->find_custom("dnz", fdnz);
-  if (idnz < 0)
-    error->all(FLERR,
-	       "Can't find property dnz for pair_style sph/concentration/mass/potential/charge");
-  dnz = atom->dvector[idnz];
 
 }
 
@@ -195,9 +149,6 @@ void FixSPHConcentrationMassPotential::final_integrate() {
       cA[i] += dtcA*dcA[i];
       cC[i] += dtcA*dcC[i];
       local_pot[i] = next_local_pot[i];
-      nx[i] = dnx[i];
-      ny[i] = dny[i];
-      nz[i] = dnz[i];
       // Only update mass for solid particles and set potential to 0
       if (type[i] == 2){
 	mM[i] += dtcA*dmM[i];

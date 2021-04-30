@@ -1,6 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
-#include "pair_sph_twospecies_isodiffusion_migration_potential_csr.h"
+#include "pair_sph_twospecies_isodiffusion_migration_potential_csr_constRC.h"
 #include "sph_kernel_quintic.h"
 #include "atom.h"
 #include "force.h"
@@ -17,7 +17,7 @@ using namespace LAMMPS_NS;
 
 /* ---------------------------------------------------------------------- */
 
-PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::PairSPHTwospeciesIsodiffusionMigrationPotentialCSR(LAMMPS *lmp) : Pair(lmp)
+PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC(LAMMPS *lmp) : Pair(lmp)
 {
   restartinfo = 0;
 
@@ -26,7 +26,7 @@ PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::PairSPHTwospeciesIsodiffusio
   int icA = atom->find_custom("cA", fcA);
   if (icA < 0)
     error->all(FLERR,
-	       "Can't find property cA for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property cA for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   cA = atom->dvector[icA];
 
   // find the local anion concentration property
@@ -34,7 +34,7 @@ PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::PairSPHTwospeciesIsodiffusio
   int idcA = atom->find_custom("dcA", fdcA);
   if (idcA < 0)
     error->all(FLERR,
-	       "Can't find property dcA for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property dcA for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   dcA = atom->dvector[idcA];
 
   // find the cation concentration property
@@ -42,7 +42,7 @@ PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::PairSPHTwospeciesIsodiffusio
   int icC = atom->find_custom("cC", fcC);
   if (icC < 0)
     error->all(FLERR,
-	       "Can't find property cC for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property cC for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   cC = atom->dvector[icC];
 
   // find the local cation concentration property
@@ -50,7 +50,7 @@ PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::PairSPHTwospeciesIsodiffusio
   int idcC = atom->find_custom("dcC", fdcC);
   if (idcC < 0)
     error->all(FLERR,
-	       "Can't find property dcC for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property dcC for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   dcC = atom->dvector[idcC];
 
   // find the anion mobility property
@@ -58,7 +58,7 @@ PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::PairSPHTwospeciesIsodiffusio
   int imuA = atom->find_custom("muA", fmuA);
   if (imuA < 0)
     error->all(FLERR,
-	       "Can't find property muA for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property muA for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   muA = atom->dvector[imuA];
 
     // find the cation mobility property
@@ -66,7 +66,7 @@ PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::PairSPHTwospeciesIsodiffusio
   int imuC = atom->find_custom("muC", fmuC);
   if (imuC < 0)
     error->all(FLERR,
-	       "Can't find property muC for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property muC for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   muC = atom->dvector[imuC];
 
   // find the local anion diffusivity constant
@@ -74,7 +74,7 @@ PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::PairSPHTwospeciesIsodiffusio
   int iDA = atom->find_custom("DA", fDA);
   if (iDA < 0)
     error->all(FLERR,
-	       "Can't find property DA for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property DA for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   DA = atom->dvector[iDA];
 
     // find the local cation diffusivity constant
@@ -82,23 +82,15 @@ PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::PairSPHTwospeciesIsodiffusio
   int iDC = atom->find_custom("DC", fDC);
   if (iDC < 0)
     error->all(FLERR,
-	       "Can't find property DC for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property DC for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   DC = atom->dvector[iDC];
-
-  // find the reaction rate coefficient for the cations
-  int fRC;
-  int iRC = atom->find_custom("RC", fRC);
-  if (iRC < 0)
-    error->all(FLERR,
-	       "Can't find property RC for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
-  RC = atom->dvector[iRC];
 
   // find the mass of metal property
   int fmM;
   int imM = atom->find_custom("mM", fmM);
   if (imM < 0)
     error->all(FLERR,
-	       "Can't find property mM for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property mM for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   mM = atom->dvector[imM];
 
   // find the change in mass of metal property
@@ -106,7 +98,7 @@ PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::PairSPHTwospeciesIsodiffusio
   int idmM = atom->find_custom("dmM", fdmM);
   if (idmM < 0)
     error->all(FLERR,
-	       "Can't find property dmM for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property dmM for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   dmM = atom->dvector[idmM];
 
   // find the local potential
@@ -114,7 +106,7 @@ PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::PairSPHTwospeciesIsodiffusio
   int ilocal_pot = atom->find_custom("local_pot", flocal_pot);
   if (ilocal_pot < 0)
     error->all(FLERR,
-	       "Can't find property local_pot for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property local_pot for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   local_pot = atom->dvector[ilocal_pot];
 
   // find the next local potential
@@ -122,7 +114,7 @@ PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::PairSPHTwospeciesIsodiffusio
   int inext_local_pot = atom->find_custom("next_local_pot", fnext_local_pot);
   if (inext_local_pot < 0)
     error->all(FLERR,
-	       "Can't find property next_local_pot for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property next_local_pot for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   next_local_pot = atom->dvector[inext_local_pot];
 
   // find the x-component normal
@@ -130,56 +122,34 @@ PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::PairSPHTwospeciesIsodiffusio
   int inx = atom->find_custom("nx", fnx);
   if (inx < 0)
     error->all(FLERR,
-	       "Can't find property nx for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property nx for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   nx = atom->dvector[inx];
   
-  // find the next x-component normal
-  int fdnx;
-  int idnx = atom->find_custom("dnx", fdnx);
-  if (idnx < 0)
-    error->all(FLERR,
-	       "Can't find property dnx for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
-  dnx = atom->dvector[idnx];
   // find the y-component normal
   int fny;
   int iny = atom->find_custom("ny", fny);
   if (iny < 0)
     error->all(FLERR,
-	       "Can't find property ny for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property ny for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   ny = atom->dvector[iny];
   
-  // find the next y-component normal
-  int fdny;
-  int idny = atom->find_custom("dny", fdny);
-  if (idny < 0)
-    error->all(FLERR,
-	       "Can't find property dny for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
-  dny = atom->dvector[idny];
   
   // find the z-component normal
   int fnz;
   int inz = atom->find_custom("nz", fnz);
   if (inz < 0)
     error->all(FLERR,
-	       "Can't find property nz for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Can't find property nz for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
   nz = atom->dvector[inz];
   
-  // find the next z-component normal
-  int fdnz;
-  int idnz = atom->find_custom("dnz", fdnz);
-  if (idnz < 0)
-    error->all(FLERR,
-	       "Can't find property dnz for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
-  dnz = atom->dvector[idnz];
-
   // set comm size needed by this pair
-  comm_forward = 9;
+  comm_forward = 8;
   comm_reverse = 6;
 }
 
 /* ---------------------------------------------------------------------- */
 
-PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::~PairSPHTwospeciesIsodiffusionMigrationPotentialCSR() {
+PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::~PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC() {
   if (allocated) {
     memory->destroy(setflag);
     memory->destroy(cutsq);
@@ -189,7 +159,7 @@ PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::~PairSPHTwospeciesIsodiffusi
 }
 
 /* ---------------------------------------------------------------------- */
-void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::init_style()
+void PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::init_style()
 {
   // need a full neighbour list
   int irequest = neighbor->request(this);
@@ -199,22 +169,22 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::init_style()
 
 /* ---------------------------------------------------------------------- */
 
-void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::compute(int eflag, int vflag) {
+void PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::compute(int eflag, int vflag) {
   int i, j, ii, jj, inum, jnum, itype, jtype;
-  double delx, dely, delz, rdelx, rdely, rdelz;
+  double delx, dely, delz;
 
   int *ilist, *jlist, *numneigh, **firstneigh;
   double imass, jmass, h, ih, ihsq;
-  double r, wf, wfd, wfdx, wfdy, wfdz, nwfdx, nwfdy, nwfdz, D, K;
+  double r, wf, wfd, D, K;
 
-  double deltaDcA, deltaDcC;
+  double deltaDcA, deltaDcAixx, deltaDcAjxx, deltaDcAiyy, deltaDcAjyy, deltaDcAy, deltaDcAx;
+  double deltaDcC, deltaDcCixx, deltaDcCjxx, deltaDcCiyy, deltaDcCjyy, deltaDcCy, deltaDcCx;
   double deltaMcA, deltaMcAi, deltaMcAj;
   double deltaMcC, deltaMcCi, deltaMcCj;
   double deltadmM;
   double chargedensityi, chargedensityj;
   double  pi;
   double ni, nj;
-  double dn_mag;
 
   if (eflag || vflag)
     ev_setup(eflag, vflag);
@@ -234,7 +204,6 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::compute(int eflag, int 
   firstneigh = list->firstneigh;
 
   pi = 3.1415927;
-  dn_mag = 0.0;
   
   // Communicate the local cA to the ghost atoms
   comm->forward_comm_pair(this);
@@ -245,9 +214,6 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::compute(int eflag, int 
       dcA[ii] = 0.0;
       dcC[ii] = 0.0;
       next_local_pot[ii] = 0.0;
-      dnx[ii] = 0.0;
-      dny[ii] = 0.0;
-      dnz[ii] = 0.0;
     }
   
   for (ii = 0; ii < inum; ii++) {
@@ -272,14 +238,9 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::compute(int eflag, int 
       delx = x[i][0] - x[j][0];
       dely = x[i][1] - x[j][1];
       delz = x[i][2] - x[j][2];
-      rdelx = fabs(delx);
-      rdely = fabs(dely);
-      rdelz = fabs(delz);
-
       r = sqrt(delx * delx + dely * dely + delz * delz);
-
       
-      if (r+0.0000000001 < cut[itype][jtype]) {
+      if (r< cut[itype][jtype]) {
 	h = cut[itype][jtype];
 	ih = 1.0/h;
 	
@@ -288,30 +249,10 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::compute(int eflag, int 
 	  printf("3D sims not vetted");
 	  wfd = sph_dw_quintic3d(r*ih);
 	  wfd = wfd*ih*ih*ih*ih;
-	  wfdx = sph_dw_quintic3d(rdelx*ih);
-	  wfdx = wfdx*ih*ih*ih*ih;
-	  nwfdx=wfdx;
-	  if(delx<0){nwfdx=wfdx*-1;}
-	  wfdy = sph_dw_quintic3d(rdely*ih);
-	  wfdy = wfdy*ih*ih*ih*ih;
-	  nwfdy = wfdy;
-	  if(dely<0){nwfdy=wfdy*-1;}
-	  wfdz = sph_dw_quintic3d(rdelz*ih);
-	  wfdz = wfdz*ih*ih*ih*ih;
-	  nwfdz = wfdz;
-	  if(delz<0){nwfdz=wfdz*-1;}
 	  wf = sph_kernel_quintic3d(r*ih)*ih*ih*ih;
 	} else {
 	  wfd = sph_dw_quintic2d(r*ih);
 	  wfd = wfd*ih*ih*ih;
-	  wfdx = sph_dw_quintic2d(rdelx*ih);
-	  wfdx = wfdx*ih*ih*ih;
-	  nwfdx = wfdx;
-	  if(delx<0){nwfdx=wfdx*-1;}
-	  wfdy = sph_dw_quintic2d(rdely*ih);
-	  wfdy = wfdy*ih*ih*ih;
-	  nwfdy = wfdy;
-	  if(dely<0){nwfdy=wfdy*-1;}
 	  wf = sph_kernel_quintic2d(r*ih)*ih*ih;
 	}
 	
@@ -325,18 +266,19 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::compute(int eflag, int 
 	  
 	  // Anion mass transport
 	  // Anion diffusion
-	  deltaDcA = (1.0/(2.0*imass*r))*(DA[i]*ni*imass + DA[j]*nj*jmass)/(ni*nj) * (cA[i] - cA[j])*wfd;
+	  deltaDcA = (1.0/(imass*r))*(DA[i]*ni*imass + DA[j]*nj*jmass)/(ni*nj) * (cA[i] - cA[j])*wfd;
 	  
 	  // Migration
 	  deltaMcAi = muA[i]*cA[i]*ni*imass;
 	  deltaMcAj = muA[i]*cA[j]*nj*jmass; // TODO: muA[j] is always 0 when it should be equal to muA[i]
 	  // Total migration
-	  deltaMcA = (1.0/(2.0*imass*r))*(deltaMcAi + deltaMcAj)/(ni*nj) * (local_pot[i] - local_pot[j])*wfd;
+	  deltaMcA = (1.0/(imass*r))*(deltaMcAi + deltaMcAj)/(ni*nj) * (local_pot[i] - local_pot[j])*wfd;
 	  // Total anion transport
 	  dcA[i] += deltaDcA - deltaMcA;
 	  
 	  // Cation mass transport
-	  deltaDcC = (1.0/(2.0*imass*r))*(DC[i]*ni*imass + DC[j]*nj*jmass)/(ni*nj) * (cC[i] - cC[j] )*wfd;
+	  // Cation diffusion
+	  deltaDcC = (1.0/(imass*r))*(DC[i]*ni*imass + DC[j]*nj*jmass)/(ni*nj) * (cC[i] - cC[j] )*wfd;
 	  
 	  // Migration
 	  deltaMcCi = muC[i]*cC[i]*ni*imass;
@@ -351,43 +293,26 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::compute(int eflag, int 
 	  next_local_pot[i] = next_local_pot[i]  - chargedensityj / (4 * pi) / r;
 	} // fluid-fluid interaction
 	else if ((itype==1) && (jtype==2)) {  // fluid-solid interaction
-	  if (r+0.00000000001 <= phase_support[itype][jtype]) {
-	    deltaDcC = 1.0*RC[j]*(cC[i] - cCeq);
+	  if (r <= phase_support[itype][jtype]) {
+	    deltaDcC = 1.0*RC*(cC[i] - cCeq);
 	    deltaDcC *= fabs((nx[j] + nx[i]) + (ny[j] + ny[i]));
 	    dcC[i] -= deltaDcC;
-	    // Normals calculation for next step
-	    dnx[i] += nwfdx;
-	    dny[i] += nwfdy;
-	    // j particle (solid) contributes 0v to net charge density
 	    next_local_pot[i] = next_local_pot[i];
 	  }
 	} // fluid-solid interaction   
 	else if ((itype==2) && (jtype==1)) { // solid-fluid interaction               
-	  if (r+0.00000000001 <= phase_support[itype][jtype]) {
-	    deltadmM = (jmass)*RC[i]*(cC[j] - cCeq);
+	  if (r<= phase_support[itype][jtype]) {
+	    deltadmM = (jmass)*RC*(cC[j] - cCeq);
 	    deltadmM *= fabs((nx[j] + nx[i]) + (ny[j] + ny[i]));
 	    dmM[i] += deltadmM;
-	    
-	    // Normals calculation for next step
-	    dnx[i] -= nwfdx;
-	    dny[i] -= nwfdy;
+	    //	    printf("nx=%0.4f",nx[i]);
 	    // Potential in solid is 0v
 	    next_local_pot[i] = 0;
 	  }
 	} // solid-fluid interaction                                             
       } // check if j particle is inside kernel
     } // jj loop
-    dn_mag = sqrt(dnx[i]*dnx[i] + dny[i]*dny[i]);// + dnz[i]*dnz[i]);
-    if(dn_mag==0) {
-      dnx[i] = 0;
-      dny[i] = 0;
-    }
-    else {
-      dnx[i] = dnx[i]/dn_mag;
-      dny[i] = dny[i]/dn_mag;
-    }
   } // ii loop
-
   // Communicate the ghost dcA, dcC and dmM to the locally owned atoms
   comm->reverse_comm_pair(this);
 }
@@ -396,7 +321,7 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::compute(int eflag, int 
    allocate all arrays
    ------------------------------------------------------------------------- */
 
-void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::allocate() {
+void PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::allocate() {
   allocated = 1;
   int n = atom->ntypes;
 
@@ -414,19 +339,19 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::allocate() {
    global settings
    ------------------------------------------------------------------------- */
 
-void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::settings(int narg, char **arg) {
+void PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::settings(int narg, char **arg) {
   if (narg != 0)
     error->all(FLERR,
-	       "Illegal number of setting arguments for pair_style sph/twospecies/isodiffusion/migration/potential/csr");
+	       "Illegal number of setting arguments for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
 }
 
 /* ----------------------------------------------------------------------
    set coefs for one or more type pairs
    ------------------------------------------------------------------------- */
 
-void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::coeff(int narg, char **arg) {
-  if (narg != 9)
-    error->all(FLERR,"Incorrect number of args for pair_style sph/twospecies/isodiffusion/migration/potential/csr  coefficients");
+void PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::coeff(int narg, char **arg) {
+  if (narg != 10)
+    error->all(FLERR,"Incorrect number of args for pair_style sph/twospecies/anisodiffusion/migration/potential/csr/constrc  coefficients");
   if (!allocated)
     allocate();
 
@@ -453,6 +378,9 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::coeff(int narg, char **
   // Get the cation equilibrium concentration
   cCeq = utils::numeric(FLERR,arg[8],false,lmp);
 
+    // Get the reaction rate constant
+  RC = utils::numeric(FLERR,arg[9],false,lmp);
+
   int count = 0;
   for (int i = ilo; i <= ihi; i++) {
     for (int j = MAX(jlo,i); j <= jhi; j++) {
@@ -464,17 +392,17 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::coeff(int narg, char **
   }
 
   if (count == 0)
-    error->all(FLERR,"Incorrect args for pair coefficients sph/twospecies/isodiffusion/migration/potential/csr");
+    error->all(FLERR,"Incorrect args for pair coefficients sph/twospecies/anisodiffusion/migration/potential/csr/constrc");
 }
 
 /* ----------------------------------------------------------------------
    init for one type pair i,j and corresponding j,i
    ------------------------------------------------------------------------- */
 
-double PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::init_one(int i, int j) {
+double PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::init_one(int i, int j) {
 
   if (setflag[i][j] == 0) {
-    error->all(FLERR,"All pair sph/twospecies/isodiffusion/migration/potential/csr coeffs are not set");
+    error->all(FLERR,"All pair sph/twospecies/anisodiffusion/migration/potential/csr/constrc coeffs are not set");
   }
 
   cut[j][i] = cut[i][j];
@@ -485,7 +413,7 @@ double PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::init_one(int i, int j
 
 /* ---------------------------------------------------------------------- */
 
-double PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::single(int i, int j, int itype, int jtype,
+double PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::single(int i, int j, int itype, int jtype,
 					    double rsq, double factor_coul, double factor_lj, double &fforce) {
   fforce = 0.0;
 
@@ -494,7 +422,7 @@ double PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::single(int i, int j, 
 
 /* ---------------------------------------------------------------------- */
 
-int PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::pack_forward_comm(int n, int *list, double *buf,
+int PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::pack_forward_comm(int n, int *list, double *buf,
 						    int pbc_flag, int *pbc)
 {
   int i, j, m;
@@ -504,19 +432,15 @@ int PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::pack_forward_comm(int n,
     buf[m++] = cA[j];
     buf[m++] = cC[j];
     buf[m++] = mM[j];
-    buf[m++] = RC[j];
     buf[m++] = local_pot[j];
     buf[m++] = atom->type[j];
-    buf[m++] = nx[i];
-    buf[m++] = ny[i];
-    buf[m++] = nz[i];
   }
   return m;
 }
 
 /* ---------------------------------------------------------------------- */
 
-void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::unpack_forward_comm(int n, int first, double *buf)
+void PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::unpack_forward_comm(int n, int first, double *buf)
 {
   int i, m, last;
   m = 0;
@@ -525,18 +449,14 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::unpack_forward_comm(int
     cA[i] = buf[m++];
     cC[i] = buf[m++];
     mM[i] = buf[m++];
-    RC[i] = buf[m++];
     local_pot[i] = buf[m++];
     atom->type[i] = buf[m++];
-    nx[i] = buf[m++];
-    ny[i] = buf[m++];
-    nz[i] = buf[m++];
   }
 }
 
 /* ---------------------------------------------------------------------- */
 
-int PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::pack_reverse_comm(int n, int first, double *buf)
+int PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::pack_reverse_comm(int n, int first, double *buf)
 {
   int i,m,last;
   m = 0;
@@ -545,17 +465,13 @@ int PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::pack_reverse_comm(int n,
     buf[m++] = dcA[i];
     buf[m++] = dcC[i];
     buf[m++] = dmM[i];
-    buf[m++] = dnx[i];
-    buf[m++] = dny[i];
-    buf[m++] = dnz[i];
-
   }
   return m;
 }
 
 /* ---------------------------------------------------------------------- */
 
-void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::unpack_reverse_comm(int n, int *list, double *buf)
+void PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::unpack_reverse_comm(int n, int *list, double *buf)
 {
   int i,j,m;
   m = 0;
@@ -565,8 +481,5 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSR::unpack_reverse_comm(int
     dcA[j] += buf[m++];
     dcC[j] += buf[m++];
     dmM[j] += buf[m++];
-    dnx[i] += buf[m++];
-    dny[i] += buf[m++];
-    dnz[i] += buf[m++];
   }
 }
