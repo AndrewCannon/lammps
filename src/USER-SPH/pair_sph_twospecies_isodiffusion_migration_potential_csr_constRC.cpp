@@ -305,7 +305,6 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::compute(int efla
 	    deltadmM = (jmass)*RC*(cC[j] - cCeq);
 	    deltadmM *= fabs(nx[j] - nx[i]) + fabs(ny[j] - ny[i]);
 	    dmM[i] -= deltadmM*wfd;
-	    //	    printf("nx=%0.4f",nx[i]);
 	    // Potential in solid is 0v
 	    next_local_pot[i] = 0;
 	  }
