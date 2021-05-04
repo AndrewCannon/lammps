@@ -196,14 +196,11 @@ void FixSPHSurfaceNormal::initial_integrate(int /*vflag*/)
 	  wf = sph_kernel_quintic2d(r*ih)*ih*ih;
 	}
 	if ((itype==2) && (jtype==1)||(itype==1) && (jtype==2)) { // solid-fluid interaction only
-	  if(i==10){printf("wnx=%5.4f,wny=%5.4f,rdx=%0.5f,j%d\n",nwfdx,nwfdy,rdelx,j);}
 	  nx[i] += nwfdx;
 	  ny[i] += nwfdy;
-	  //	  if(i==11){printf("nx=%0.4f,ny=%0.4f,j%d\n",nx[i],ny[i],j);}
 	} 
       } // loop inside support kernel
     } // for loop jj
-    if(i==10){printf("lnx=%0.4f,ny=%0.4f,j%d\n",nx[i],ny[i],j);}
     nmag = sqrt(nx[i]*nx[i] + ny[i]*ny[i]);// + nz[i]*nz[i]);
     if(nmag==0) {
       nx[i] = 0;
@@ -213,7 +210,6 @@ void FixSPHSurfaceNormal::initial_integrate(int /*vflag*/)
       nx[i] = nx[i]/nmag;
       ny[i] = ny[i]/nmag;
     }
-    if(i==10){printf("f:nx=%0.4f,ny=%0.4f,j%d,nm%4.5f\n",nx[i],ny[i],j,nmag);}
   } // loop through i
 }
 
