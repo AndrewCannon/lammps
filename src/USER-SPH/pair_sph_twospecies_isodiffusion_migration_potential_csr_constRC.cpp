@@ -296,7 +296,7 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::compute(int efla
 	  if (r <= phase_support[itype][jtype]) {
 	    deltaDcC = 1.0*RC*(cC[i] - cCeq);
 	    deltaDcC *= fabs(nx[i] - nx[j]) + fabs(ny[i] - ny[j]);
-	    dcC[i] -= deltaDcC*wfd;
+	    dcC[i] += deltaDcC*wfd;
 	    next_local_pot[i] = next_local_pot[i];
 	  }
 	} // fluid-solid interaction   
