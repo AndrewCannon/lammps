@@ -295,7 +295,7 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::compute(int efla
 	else if ((itype==1) && (jtype==2)) {  // fluid-solid interaction
 	  if (r <= phase_support[itype][jtype]) {
 	    deltaDcC = 1.0*RC*(cC[i] - cCeq);
-	    deltaDcC *= fabs(nx[i] - nx[j]) + fabs(ny[i] - ny[j]);
+	    deltaDcC *= fabs(nx[i]) + fabs(nx[j]) + fabs(ny[i]) + fabs(ny[j]);
 	    dcC[i] += deltaDcC*wfd;
 	    next_local_pot[i] = next_local_pot[i];
 	  }
@@ -303,7 +303,7 @@ void PairSPHTwospeciesIsodiffusionMigrationPotentialCSRConstRC::compute(int efla
 	else if ((itype==2) && (jtype==1)) { // solid-fluid interaction               
 	  if (r<= phase_support[itype][jtype]) {
 	    deltadmM = (jmass)*RC*(cC[j] - cCeq);
-	    deltadmM *= fabs(nx[j] - nx[i]) + fabs(ny[j] - ny[i]);
+	    deltadmM *= fabs(nx[i]) + fabs(nx[j]) + fabs(ny[i]) + fabs(ny[j]);
 	    dmM[i] -= deltadmM*wfd;
 	    // Potential in solid is 0v
 	    next_local_pot[i] = 0;
