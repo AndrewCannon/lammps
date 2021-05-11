@@ -344,10 +344,10 @@ void PairSPHTwospeciesIsodiffusionMigrationCSRConstRC::coeff(int narg, char **ar
   double phase_one = utils::numeric(FLERR,arg[3],false,lmp);
  
   // Get the cation equilibrium concentration
-  cCeq = utils::numeric(FLERR,arg[8],false,lmp);
+  cCeq = utils::numeric(FLERR,arg[4],false,lmp);
 
     // Get the reaction rate constant
-  RC = utils::numeric(FLERR,arg[9],false,lmp);
+  RC = utils::numeric(FLERR,arg[5],false,lmp);
 
   int count = 0;
   for (int i = ilo; i <= ihi; i++) {

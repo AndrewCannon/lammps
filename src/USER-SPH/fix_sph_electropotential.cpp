@@ -68,7 +68,7 @@ FixSPHElectroPotential::FixSPHElectroPotential(LAMMPS *lmp, int narg, char **arg
   int icA = atom->find_custom("cA", fcA);
   if (icA < 0)
     error->all(FLERR,
-	       "Can't find property cA for pair_style sph/twospecies/anisodiffusion/migration/csr/constrc");
+	       "Can't find property cA for fix sph/electropotential");
   cA = atom->dvector[icA];
 
     // find the cation concentration property
@@ -76,7 +76,7 @@ FixSPHElectroPotential::FixSPHElectroPotential(LAMMPS *lmp, int narg, char **arg
   int icC = atom->find_custom("cC", fcC);
   if (icC < 0)
     error->all(FLERR,
-	       "Can't find property cC for pair_style sph/twospecies/anisodiffusion/migration/csr/constrc");
+	       "Can't find property cC for fix sph/electropotential");
   cC = atom->dvector[icC];
 
     // find the local potential
@@ -84,7 +84,7 @@ FixSPHElectroPotential::FixSPHElectroPotential(LAMMPS *lmp, int narg, char **arg
   int ilocal_pot = atom->find_custom("local_pot", flocal_pot);
   if (ilocal_pot < 0)
     error->all(FLERR,
-	       "Can't find property local_pot for pair_style sph/twospecies/anisodiffusion/migration/csr/constrc");
+	       "Can't find property local_pot for fix sph/electropotential");
   local_pot = atom->dvector[ilocal_pot];
 }
 
