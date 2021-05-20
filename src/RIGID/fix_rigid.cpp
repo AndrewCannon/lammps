@@ -13,29 +13,29 @@
 
 #include "fix_rigid.h"
 
-#include <cmath>
-
-#include <cstring>
-#include "math_extra.h"
-#include "math_eigen.h"
 #include "atom.h"
 #include "atom_vec_ellipsoid.h"
 #include "atom_vec_line.h"
 #include "atom_vec_tri.h"
-#include "domain.h"
-#include "update.h"
-#include "respa.h"
-#include "modify.h"
-#include "group.h"
 #include "comm.h"
-#include "random_mars.h"
-#include "force.h"
-#include "input.h"
-#include "variable.h"
-#include "math_const.h"
-#include "memory.h"
+#include "domain.h"
 #include "error.h"
+#include "force.h"
+#include "group.h"
+#include "input.h"
+#include "math_const.h"
+#include "math_eigen.h"
+#include "math_extra.h"
+#include "memory.h"
+#include "modify.h"
+#include "random_mars.h"
+#include "respa.h"
 #include "rigid_const.h"
+#include "update.h"
+#include "variable.h"
+
+#include <cmath>
+#include <cstring>
 
 using namespace LAMMPS_NS;
 using namespace FixConst;
@@ -329,7 +329,7 @@ FixRigid::FixRigid(LAMMPS *lmp, int narg, char **arg) :
   pstyle = ANISO;
   dimension = domain->dimension;
 
-  for (int i = 0; i < 3; i++) {
+  for (i = 0; i < 3; i++) {
     p_start[i] = p_stop[i] = p_period[i] = 0.0;
     p_flag[i] = 0;
   }
@@ -551,7 +551,7 @@ FixRigid::FixRigid(LAMMPS *lmp, int narg, char **arg) :
   // set pstat_flag
 
   pstat_flag = 0;
-  for (int i = 0; i < 3; i++)
+  for (i = 0; i < 3; i++)
     if (p_flag[i]) pstat_flag = 1;
 
   if (pcouple == XYZ || (dimension == 2 && pcouple == XY)) pstyle = ISO;
@@ -2302,7 +2302,7 @@ void FixRigid::readfile(int which, double *vec,
   int nread = 0;
   while (nread < nlines) {
     nchunk = MIN(nlines-nread,CHUNK);
-    eofflag = comm->read_lines_from_file(fp,nchunk,MAXLINE,buffer);
+    eofflag = utils::read_lines_from_file(fp,nchunk,MAXLINE,buffer,me,world);
     if (eofflag) error->all(FLERR,"Unexpected end of fix rigid file");
 
     buf = buffer;

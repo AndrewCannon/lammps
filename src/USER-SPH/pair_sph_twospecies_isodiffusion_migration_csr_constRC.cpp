@@ -230,6 +230,10 @@ void PairSPHTwospeciesIsodiffusionMigrationCSRConstRC::compute(int eflag, int vf
 	
 	// kernel function
 	if (domain->dimension == 3) {
+<<<<<<< HEAD
+=======
+	  printf("3D sims not vetted");
+>>>>>>> master
 	  wfd = sph_dw_quintic3d(r*ih);
 	  wfd = wfd*ih*ih*ih*ih;
 	  wf = sph_kernel_quintic3d(r*ih)*ih*ih*ih;
@@ -253,8 +257,13 @@ void PairSPHTwospeciesIsodiffusionMigrationCSRConstRC::compute(int eflag, int vf
 	    /(ni*nj) * (cA[i] - cA[j])*wfd;
 	  
 	  // Migration
+<<<<<<< HEAD
 	  deltaMcAi = muA[i]*cA[i]*ni*imass/0.41615; // 
 	  deltaMcAj = muA[i]*cA[j]*nj*jmass/0.41615; // /0.041 // TODO: muA[j] is always 0 when it should be equal to muA[i]
+=======
+	  deltaMcAi = muA[i]*cA[i]*ni*imass;
+	  deltaMcAj = muA[i]*cA[j]*nj*jmass; // TODO: muA[j] is always 0 when it should be equal to muA[i]
+>>>>>>> master
 	  // Total migration
 	  deltaMcA = (1.0/(imass*r))*(deltaMcAi + deltaMcAj)/(ni*nj) \
 	    * (local_pot[i] - local_pot[j])*wfd;
@@ -267,8 +276,13 @@ void PairSPHTwospeciesIsodiffusionMigrationCSRConstRC::compute(int eflag, int vf
 	    /(ni*nj) * (cC[i] - cC[j] )*wfd;
 	  
 	  // Migration
+<<<<<<< HEAD
 	  deltaMcCi = muC[i]*cC[i]*ni*imass/0.41615;
 	  deltaMcCj = muC[i]*cC[j]*nj*jmass/0.41615;// TODO: muA[j] is always 0 when it should be equal to muA[i]	      // Total migration
+=======
+	  deltaMcCi = muC[i]*cC[i]*ni*imass;
+	  deltaMcCj = muC[i]*cC[j]*nj*jmass;// TODO: muA[j] is always 0 when it should be equal to muA[i]	      // Total migration
+>>>>>>> master
 	  deltaMcC = (1.0/(imass*r))*(deltaMcCi + deltaMcCj)/(ni*nj) \
 	    * (local_pot[i] - local_pot[j])*wfd;  
 	  // Total cation transport
@@ -279,14 +293,22 @@ void PairSPHTwospeciesIsodiffusionMigrationCSRConstRC::compute(int eflag, int vf
 	  if (r <= phase_support[itype][jtype]) {
 	    deltaDcC = 1.0*RC*(cC[i] - cCeq);
 	    deltaDcC *= fabs(nx[i]) + fabs(nx[j]) + fabs(ny[i]) + fabs(ny[j]);
+<<<<<<< HEAD
 	    dcC[i] -= deltaDcC*fabs(wfd);
+=======
+	    dcC[i] += deltaDcC*wfd;
+>>>>>>> master
 	  }
 	} // fluid-solid interaction   
 	else if ((itype==2) && (jtype==1)) { // solid-fluid interaction               
 	  if (r<= phase_support[itype][jtype]) {
 	    deltadmM = (jmass)*RC*(cC[j] - cCeq);
 	    deltadmM *= fabs(nx[j]) + fabs(nx[i]) + fabs(ny[j]) + fabs(ny[i]);
+<<<<<<< HEAD
 	    dmM[i] += deltadmM*fabs(wfd);
+=======
+	    dmM[i] -= deltadmM*wfd;
+>>>>>>> master
 	  }
 	} // solid-fluid interaction                                             
       } // check if j particle is inside kernel
@@ -343,10 +365,17 @@ void PairSPHTwospeciesIsodiffusionMigrationCSRConstRC::coeff(int narg, char **ar
   double phase_one = utils::numeric(FLERR,arg[3],false,lmp);
  
   // Get the cation equilibrium concentration
+<<<<<<< HEAD
   cCeq = utils::numeric(FLERR,arg[4],false,lmp);
 
     // Get the reaction rate constant
   RC = utils::numeric(FLERR,arg[5],false,lmp);
+=======
+  cCeq = utils::numeric(FLERR,arg[8],false,lmp);
+
+    // Get the reaction rate constant
+  RC = utils::numeric(FLERR,arg[9],false,lmp);
+>>>>>>> master
 
   int count = 0;
   for (int i = ilo; i <= ihi; i++) {
