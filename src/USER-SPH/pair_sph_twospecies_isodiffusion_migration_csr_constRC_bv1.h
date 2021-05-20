@@ -1,19 +1,19 @@
 #ifdef PAIR_CLASS
 
-PairStyle(sph/twospecies/isodiffusion/migration/csr/constRC, PairSPHTwospeciesIsodiffusionMigrationCSRConstRC)
+PairStyle(sph/twospecies/isodiffusion/migration/csr/constRC/bv1, PairSPHTwospeciesIsodiffusionMigrationCSRConstRCbv1)
 
 #else
 
-#ifndef LMP_PAIR_SPH_TWOSPECIES_ISODIFFUSION_MIGRATION_CSR_CONSTRC_H
-#define LMP_PAIR_SPH_TWOSPECIES_ISODIFFUSION_MIGRATION_CSR_CONSTRC_H
+#ifndef LMP_PAIR_SPH_TWOSPECIES_ISODIFFUSION_MIGRATION_CSR_CONSTRC_BV1_H
+#define LMP_PAIR_SPH_TWOSPECIES_ISODIFFUSION_MIGRATION_CSR_CONSTRC_BV1_H
 
 #include "pair.h"
 
 namespace LAMMPS_NS {
-  class PairSPHTwospeciesIsodiffusionMigrationCSRConstRC : public Pair {
+  class PairSPHTwospeciesIsodiffusionMigrationCSRConstRCbv1 : public Pair {
   public:
-    PairSPHTwospeciesIsodiffusionMigrationCSRConstRC(class LAMMPS *);
-    virtual ~PairSPHTwospeciesIsodiffusionMigrationCSRConstRC();
+    PairSPHTwospeciesIsodiffusionMigrationCSRConstRCbv1(class LAMMPS *);
+    virtual ~PairSPHTwospeciesIsodiffusionMigrationCSRConstRCbv1();
     void init_style();
     virtual void compute(int, int);
     void settings(int, char **);
@@ -29,7 +29,7 @@ namespace LAMMPS_NS {
 
   protected:
     // cCeq is the equilibrium concentration for the cations at the anode
-    double conc_to_charge, applied_pot, cCeq, electrolyte_start, electrolyte_end, RC;
+    double applied_pot, cCeq, RC;
     // cut represents the size of kernel support
     double **cut;
     // phase_support is the size of the inter-phase interaction
